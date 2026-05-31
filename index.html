@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>尼日利亚卫浴陶瓷报价工作台</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">GK</div>
+        <div>
+          <strong>Quote Desk</strong>
+          <span>Nigeria Sanitaryware</span>
+        </div>
+      </div>
+      <nav class="nav-list" aria-label="工作台导航">
+        <button class="nav-item active" type="button" data-panel="workbench">报价工作台</button>
+        <button class="nav-item" type="button" data-panel="library">产品与BOM</button>
+        <button class="nav-item" type="button" data-panel="suppliers">供应商报价</button>
+        <button class="nav-item" type="button" data-panel="logistics">物流与汇率</button>
+        <button class="nav-item" type="button" data-panel="approvals">审批与输出</button>
+      </nav>
+      <div class="sidebar-box">
+        <span>当前角色</span>
+        <select id="roleSelect">
+          <option value="sales">业务员</option>
+          <option value="supervisor">主管</option>
+          <option value="procurement">采购</option>
+          <option value="logistics">物流/单证</option>
+          <option value="finance">财务</option>
+          <option value="product">产品/工程</option>
+          <option value="admin">管理员</option>
+        </select>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">FOB / CFR / CIF Quote Workbench</p>
+          <h1>尼日利亚卫浴陶瓷报价工作台</h1>
+        </div>
+        <div class="top-actions">
+          <button class="secondary" type="button" id="saveSnapshotBtn">保存快照</button>
+          <button class="secondary" type="button" id="exportInternalBtn">导出内部核价</button>
+          <button class="primary" type="button" id="printCustomerBtn">客户版PDF</button>
+        </div>
+      </header>
+
+      <section class="notice-strip" id="statusNotice"></section>
+
+      <section class="panel-page active" data-panel-page="workbench">
+        <div class="layout-grid">
+          <section class="panel span-8">
+            <div class="panel-head">
+              <div>
+                <h2>报价基础信息</h2>
+                <p>每张正式报价保存客户、产品、包装、供应商、物流和汇率快照。</p>
+              </div>
+              <span class="status-pill" id="quoteStatusPill">草稿</span>
+            </div>
+            <div class="form-grid">
+              <label>报价编号<input id="quoteNo" type="text"></label>
+              <label>客户名称<input id="customerName" type="text" value="Lagos Project Customer"></label>
+              <label>客户等级
+                <select id="customerLevel">
+                  <option value="standard">标准客户</option>
+                  <option value="strategic">战略客户</option>
+                  <option value="risk">高风险客户</option>
+                </select>
+              </label>
+              <label>报价对象
+                <select id="quoteObjectType">
+                  <option value="single">单一产品</option>
+                  <option value="set">成套产品</option>
+                  <option value="main_optional">主产品+可选配件</option>
+                  <option value="accessory_only">配件单独报价</option>
+                  <option value="split">陶瓷与配件分项报价</option>
+                </select>
+              </label>
+              <label>客户展示
+                <select id="displayMode">
+                  <option value="set_total">套装总价</option>
+                  <option value="split_lines">分项报价</option>
+                  <option value="main_optional">主产品+可选配件</option>
+                </select>
+              </label>
+              <label>报价状态
+                <select id="quoteStatus">
+                  <option value="draft">草稿</option>
+                  <option value="cost_reviewing">待核价</option>
+                  <option value="pending_approval">待审批</option>
+                  <option value="approved">已批准</option>
+                  <option value="issued">已外发</option>
+                  <option value="accepted">客户接受</option>
+                  <option value="rejected">客户拒绝</option>
+                  <option value="converted">已转订单</option>
+                  <option value="expired">已过期</option>
+                  <option value="cancelled">已作废</option>
+                </select>
+              </label>
+              <label>默认贸易条款
+                <select id="defaultTradeTerm">
+                  <option value="FOB">FOB</option>
+                  <option value="CFR">CFR</option>
+                  <option value="CIF">CIF</option>
+                  <option value="DDP_MANUAL">DDP 手动</option>
+                </select>
+              </label>
+              <label>目的港<input id="destinationPort" type="text" value="Lagos-Apapa"></label>
+              <label>订单数量<input id="orderQty" type="number" min="1" step="1" value="600"></label>
+              <label>报价币种
+                <select id="currency">
+                  <option value="USD">USD</option>
+                  <option value="RMB">RMB</option>
+                  <option value="NGN">NGN</option>
+                </select>
+              </label>
+              <label>报价汇率<input id="exchangeRate" type="number" min="0.0001" step="0.0001" value="6.8"></label>
+              <label>报价有效期/天<input id="quoteValidityDays" type="number" min="1" step="1" value="15"></label>
+            </div>
+          </section>
+
+          <section class="panel span-4">
+            <div class="panel-head">
+              <div>
+                <h2>策略参数</h2>
+                <p>销售价按目标毛利反推，低于底线阻断。</p>
+              </div>
+            </div>
+            <div class="form-grid one-col">
+              <label>目标毛利率 %<input id="targetMargin" type="number" min="0" max="80" step="0.1" value="22"></label>
+              <label>底线毛利率 %<input id="floorMargin" type="number" min="0" max="80" step="0.1" value="12"></label>
+              <label>佣金 %<input id="commissionRate" type="number" min="0" max="30" step="0.1" value="2"></label>
+              <label>汇率风险 %<input id="fxRiskRate" type="number" min="0" max="30" step="0.1" value="1.5"></label>
+              <label>售后/破损预留 %<input id="afterSalesRate" type="number" min="0" max="30" step="0.1" value="3"></label>
+            </div>
+          </section>
+
+          <section class="panel span-12">
+            <div class="panel-head">
+              <div>
+                <h2>报价行与供应路径</h2>
+                <p>每行独立维护贸易条款、供应路径、客户展示和是否参与装柜。</p>
+              </div>
+              <div class="button-row">
+                <select id="scenarioSelect"></select>
+                <button class="secondary" type="button" id="applyScenarioBtn">应用场景</button>
+                <button class="secondary" type="button" id="addLineBtn">新增报价行</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="line-table">
+                <thead>
+                  <tr>
+                    <th>项目</th>
+                    <th>来源/口径</th>
+                    <th>路径/组装</th>
+                    <th>贸易/展示</th>
+                    <th>数量与成本</th>
+                    <th>包装/装柜</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="quoteLinesBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel span-7">
+            <div class="panel-head">
+              <div>
+                <h2>装柜与物流</h2>
+                <p>按出货组分别计算 CBM、毛重、柜数、装载率和物流摊销。</p>
+              </div>
+            </div>
+            <div class="form-grid compact">
+              <label>柜型
+                <select id="containerType">
+                  <option value="40HQ">40HQ</option>
+                  <option value="40GP">40GP</option>
+                  <option value="20GP">20GP</option>
+                </select>
+              </label>
+              <label>装载效率 %<input id="loadingEfficiency" type="number" min="50" max="100" step="1" value="92"></label>
+              <label>最低装载率 %<input id="minLoadRate" type="number" min="50" max="100" step="1" value="85"></label>
+              <label>安全重量余量 KG<input id="weightReserve" type="number" min="0" step="50" value="1000"></label>
+              <label>尼厂本地费用/柜 RMB<input id="ngLocalCharge" type="number" min="0" step="100" value="2200"></label>
+              <label>中国到尼厂/柜 RMB<input id="chinaToNgFreight" type="number" min="0" step="100" value="11000"></label>
+              <label>中国直发/柜 RMB<input id="chinaDirectFreight" type="number" min="0" step="100" value="12500"></label>
+              <label>海运/柜 RMB<input id="oceanFreight" type="number" min="0" step="100" value="9800"></label>
+              <label>保险费率 %<input id="insuranceRate" type="number" min="0" step="0.01" value="0.35"></label>
+              <label>固定保险 RMB<input id="insuranceFixed" type="number" min="0" step="100" value="0"></label>
+              <label>超长/超重附加 RMB<input id="specialSurcharge" type="number" min="0" step="100" value="0"></label>
+              <label>手动物流说明<input id="manualLogisticsNote" type="text" placeholder="手动方案原因"></label>
+            </div>
+            <div id="loadingCards" class="loading-grid"></div>
+          </section>
+
+          <section class="panel span-5">
+            <div class="panel-head">
+              <div>
+                <h2>报价结果</h2>
+                <p>建议售价、底线售价、数量阶梯和风险等级实时更新。</p>
+              </div>
+            </div>
+            <div class="kpi-grid">
+              <article><span>含条款成本/套</span><strong id="unitCostKpi">-</strong></article>
+              <article><span>建议售价/套</span><strong id="suggestedPriceKpi">-</strong></article>
+              <article><span>底线售价/套</span><strong id="floorPriceKpi">-</strong></article>
+              <article><span>装载率</span><strong id="loadRateKpi">-</strong></article>
+            </div>
+            <div class="tier-list" id="tierList"></div>
+          </section>
+
+          <section class="panel span-7">
+            <div class="panel-head">
+              <div>
+                <h2>风险检查</h2>
+                <p>阻断、审批、提醒分级显示，避免客户版误发。</p>
+              </div>
+            </div>
+            <div id="riskList" class="risk-list"></div>
+          </section>
+
+          <section class="panel span-5">
+            <div class="panel-head">
+              <div>
+                <h2>客户版预览</h2>
+                <p>只显示客户可见字段，不展示内部成本、供应商和毛利。</p>
+              </div>
+            </div>
+            <div id="customerPreview" class="customer-preview"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel-page" data-panel-page="library">
+        <div class="layout-grid">
+          <section class="panel span-6">
+            <div class="panel-head"><div><h2>产品库样例</h2><p>产品支持多材质、多包装、多 BOM 版本。</p></div></div>
+            <div id="productLibrary" class="card-list"></div>
+          </section>
+          <section class="panel span-6">
+            <div class="panel-head"><div><h2>BOM 版本规则</h2><p>报价行选择版本后保存快照，不受后续主数据变更影响。</p></div></div>
+            <div class="rule-list">
+              <article><strong>套装总价</strong><span>客户只看到完整套装价，内部仍保留陶瓷、配件、包装和物流拆分。</span></article>
+              <article><strong>分项报价</strong><span>陶瓷、盖板、水件、安装件可分别展示不同出货口径。</span></article>
+              <article><strong>可选配件</strong><span>主产品价固定，盖板、下水件、安装包按客户选择单独显示。</span></article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel-page" data-panel-page="suppliers">
+        <section class="panel">
+          <div class="panel-head"><div><h2>供应商报价库</h2><p>过期报价不能直接用于正式报价，只能作为历史参考或提交审批。</p></div></div>
+          <div id="supplierQuotes" class="table-wrap"></div>
+        </section>
+      </section>
+
+      <section class="panel-page" data-panel-page="logistics">
+        <section class="panel">
+          <div class="panel-head"><div><h2>物流、保险与汇率规则</h2><p>第一版手动维护参数，接口字段预留给后续物流和汇率同步。</p></div></div>
+          <div class="rule-list columns">
+            <article><strong>FOB</strong><span>产品成本 + 包装 + 组装/人工 + 本地出港费用 + 风险预留。</span></article>
+            <article><strong>CFR</strong><span>在 FOB 基础上增加海运费，按出货组柜数摊销。</span></article>
+            <article><strong>CIF</strong><span>在 CFR 基础上增加保险，必须有费率或固定金额。</span></article>
+            <article><strong>DDP 手动</strong><span>仅允许主管审批后使用税费、清关和尾程模板手动报价。</span></article>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel-page" data-panel-page="approvals">
+        <div class="layout-grid">
+          <section class="panel span-6">
+            <div class="panel-head"><div><h2>权限矩阵</h2><p>多人在线版本按角色控制数据维护和审批动作。</p></div></div>
+            <div id="permissionMatrix" class="table-wrap"></div>
+          </section>
+          <section class="panel span-6">
+            <div class="panel-head"><div><h2>内部核价输出</h2><p>内部版包含成本、供应商、物流、毛利、风险和审批记录。</p></div></div>
+            <div id="internalPreview" class="internal-preview"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="selectTemplates">
+    <select data-field="source">
+      <option value="ng_factory">尼日利亚自产</option>
+      <option value="ng_local_supplier">尼日利亚本地采购</option>
+      <option value="china_supplier">中国供应商</option>
+      <option value="manual">手动确认</option>
+    </select>
+    <select data-field="basis">
+      <option value="ng_ex_factory">尼厂出厂成本</option>
+      <option value="ng_loaded">尼厂装柜成本</option>
+      <option value="china_exw">中国 EXW</option>
+      <option value="china_warehouse">送仓/进仓价</option>
+      <option value="china_fob">FOB 中国港</option>
+      <option value="landed_ng">到尼厂入库成本</option>
+      <option value="manual_cost">手动确认成本</option>
+    </select>
+    <select data-field="path">
+      <option value="ng_set_shipment">尼厂配套后出货</option>
+      <option value="ng_local_match">尼日利亚本地采购配套</option>
+      <option value="china_to_ng_assembled">中国配件到尼厂组装</option>
+      <option value="china_to_ng_unassembled">中国配件到尼厂不组装</option>
+      <option value="china_direct_customer">中国直发客户</option>
+      <option value="customer_separate_quote">客户单独报价</option>
+    </select>
+    <select data-field="assembly">
+      <option value="same_carton">组装同箱</option>
+      <option value="separate_carton">不组装随货</option>
+      <option value="direct">直发不组装</option>
+      <option value="none">不适用</option>
+    </select>
+    <select data-field="tradeTerm">
+      <option value="FOB">FOB</option>
+      <option value="CFR">CFR</option>
+      <option value="CIF">CIF</option>
+      <option value="DDP_MANUAL">DDP 手动</option>
+    </select>
+  </template>
+
+  <script src="app.js?v=prd-rebuild-20260601"></script>
+</body>
+</html>
