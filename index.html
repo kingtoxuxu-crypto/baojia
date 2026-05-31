@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卫浴陶瓷离线报价系统</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="erp-sidebar">
+      <div class="erp-brand">
+        <div class="erp-brand-mark">GK</div>
+        <div>
+          <strong>GoldKing ERP</strong>
+          <span>卫浴业务运营平台</span>
+        </div>
+      </div>
+      <div class="erp-nav-group">
+        <button class="erp-nav-item active" type="button" data-erp-page-tab="dashboard">
+          <span>首页</span>
+          <small>经营总览</small>
+        </button>
+        <div class="erp-nav-tree" data-erp-nav-group="quote">
+          <button class="erp-nav-item erp-nav-parent" type="button" data-erp-parent-tab="quote">
+            <span>报价管理</span>
+            <small>报价子系统</small>
+            <b class="erp-nav-caret" aria-hidden="true">▾</b>
+          </button>
+          <div class="erp-subnav">
+            <button class="erp-subnav-item" type="button" data-erp-page-tab="quote" data-quote-page-tab="workbench">报价工作台</button>
+            <button class="erp-subnav-item" type="button" data-erp-page-tab="quote" data-quote-page-tab="quotes">报价中心</button>
+          </div>
+        </div>
+        <div class="erp-nav-tree" data-erp-nav-group="factory">
+          <button class="erp-nav-item erp-nav-parent" type="button" data-erp-parent-tab="factory">
+            <span>工厂中心</span>
+            <small>费率与人员</small>
+            <b class="erp-nav-caret" aria-hidden="true">▾</b>
+          </button>
+          <div class="erp-subnav">
+            <button class="erp-subnav-item" type="button" data-erp-page-tab="factory" data-factory-page-tab="rates">费率中心</button>
+            <button class="erp-subnav-item" type="button" data-erp-page-tab="factory" data-factory-page-tab="process">工序中心</button>
+            <button class="erp-subnav-item" type="button" data-erp-page-tab="factory" data-factory-page-tab="packaging">包装中心</button>
+            <button class="erp-subnav-item" type="button" data-erp-page-tab="factory" data-factory-page-tab="personnel">人员中心</button>
+          </div>
+        </div>
+        <button class="erp-nav-item" type="button" data-erp-page-tab="sales">
+          <span>销售管理</span>
+          <small>订单与客户</small>
+        </button>
+        <button class="erp-nav-item" type="button" data-erp-page-tab="purchase">
+          <span>采购管理</span>
+          <small>供应链协同</small>
+        </button>
+        <button class="erp-nav-item" type="button" data-erp-page-tab="production">
+          <span>生产管理</span>
+          <small>工厂排产</small>
+        </button>
+        <button class="erp-nav-item" type="button" data-erp-page-tab="finance">
+          <span>财务管理</span>
+          <small>成本与利润</small>
+        </button>
+        <button class="erp-nav-item" type="button" data-erp-page-tab="master">
+          <span>基础资料</span>
+          <small>主数据中心</small>
+        </button>
+        <div class="erp-nav-tree" data-erp-nav-group="system">
+          <button class="erp-nav-item erp-nav-parent" type="button" data-erp-parent-tab="system">
+            <span>系统管理</span>
+            <small>离线数据</small>
+            <b class="erp-nav-caret" aria-hidden="true">▾</b>
+          </button>
+          <div class="erp-subnav">
+            <button class="erp-subnav-item" type="button" data-erp-page-tab="system" data-system-page-tab="account">离线数据</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="erp-main">
+    <header class="erp-topbar">
+      <div>
+        <div class="erp-breadcrumb">
+          <span>ERP 平台</span>
+          <span class="erp-breadcrumb-separator">/</span>
+          <span id="erpPageBreadcrumb">经营驾驶舱</span>
+        </div>
+        <h1 id="erpPageTitle" class="erp-page-title">经营驾驶舱</h1>
+      </div>
+      <div class="auth-actions">
+        <span id="authStatusBadge" class="auth-status-badge">离线模式</span>
+        <button id="authOpenBtn" class="secondary dark" type="button">导入备份</button>
+        <button id="signOutBtn" class="secondary dark" type="button">导出备份</button>
+      </div>
+    </header>
+
+    <main class="erp-content">
+      <section class="erp-page active" data-erp-page="dashboard">
+        <div class="dashboard-grid" style="margin-bottom: 24px;">
+          <article class="dashboard-card">
+            <span>本地报价单</span>
+            <strong id="dashboardQuoteCount">0</strong>
+            <p>当前浏览器 IndexedDB 中已保存的报价单数量</p>
+          </article>
+          <article class="dashboard-card">
+            <span>待审批报价</span>
+            <strong id="dashboardPendingCount">0</strong>
+            <p>适合后续接入审批流的待处理报价</p>
+          </article>
+          <article class="dashboard-card">
+            <span>已确认报价</span>
+            <strong id="dashboardApprovedCount">0</strong>
+            <p>可继续延伸为订单与利润分析输入</p>
+          </article>
+          <article class="dashboard-card">
+            <span>离线数据项</span>
+            <strong id="dashboardUserCount">0</strong>
+            <p>报价单、设置和价格库都保存在本机</p>
+          </article>
+        </div>
+
+        <div class="dashboard-layout">
+          <section class="panel">
+            <div class="panel-title">
+              <h2>快捷入口</h2>
+              <span class="muted">常用功能直接进入对应 ERP 子模块</span>
+            </div>
+            <div class="quick-grid">
+              <button class="quick-card" type="button" data-open-erp-page="quote" data-open-quote-page="workbench">
+                <strong>进入报价工作台</strong>
+                <span>开始新建或编辑报价</span>
+              </button>
+              <button class="quick-card" type="button" data-open-erp-page="quote" data-open-quote-page="quotes">
+                <strong>打开报价中心</strong>
+                <span>查看、复制、归档已有报价</span>
+              </button>
+              <button class="quick-card" type="button" data-open-erp-page="system" data-open-system-page="account">
+                <strong>进入离线数据</strong>
+                <span>维护客户报价默认条款与本机备份</span>
+              </button>
+              <button class="quick-card" type="button" data-open-erp-page="factory" data-open-factory-page="rates">
+                <strong>进入工厂中心</strong>
+                <span>维护费率中心与人员中心参数</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-title">
+              <h2>最近报价动态</h2>
+              <span class="muted">帮助管理层快速掌握报价单状态变化</span>
+            </div>
+            <div id="dashboardRecentList" class="dashboard-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="erp-page" data-erp-page="quote">
+    <header class="hero module-hero">
+      <div>
+        <p class="eyebrow">Offline Sanitaryware Quote Pro</p>
+        <h1>卫浴陶瓷离线报价系统</h1>
+        <p class="hero-copy">覆盖马桶与台盆规格、陶瓷工艺、配件、包装、物流、认证与利润预留，纯浏览器离线保存，兼顾快速报价和工厂成本拆分。</p>
+      </div>
+      <div class="hero-actions">
+        <button id="loadTemplateBtn" class="secondary" title="按当前产品模板重新带出默认参数">应用模板</button>
+        <button id="saveQuoteBtn" class="secondary">保存报价</button>
+        <button id="exportBtn" class="secondary">导出内部Excel</button>
+        <button id="printBtn" class="secondary">客户版PDF/打印</button>
+      </div>
+    </header>
+
+    <main class="page-stack">
+      <section class="page-section active" data-page="workbench">
+      <div class="workspace">
+      <div class="workspace-left">
+        <section class="panel">
+          <div class="panel-title">
+            <div>
+              <h2 id="quoteInputTitle">极速报价输入</h2>
+              <span id="quoteInputDesc" class="muted">只填写业务关键项，其余包装、装柜、物流和默认费用由系统自动计算</span>
+            </div>
+            <div class="quote-mode-switch">
+              <button id="rapidModeBtn" class="mode-chip active" type="button">极速报价</button>
+              <button id="fullModeBtn" class="mode-chip" type="button">完整模式</button>
+              <span id="quoteCodeBadge" class="badge"></span>
+            </div>
+          </div>
+        <form id="customerForm" class="grid-form">
+          <div class="section-band section-band--base span-12">
+            <div class="form-section-title">
+              <span>客户与产品</span>
+              <small>先确认客户、模板、订单和市场信息，极速模式首屏优先保证这一组录入最顺手。</small>
+            </div>
+            <div class="compact-field-grid compact-field-grid--base">
+              <label>
+                客户名称
+                <input id="customerName" name="customerName" type="text" placeholder="客户名">
+              </label>
+              <label class="rapid-hidden-field">
+                项目名称
+                <input id="projectName" name="projectName" type="text" placeholder="项目名">
+              </label>
+              <label>
+                产品模板
+                <select id="templateSelect" name="templateSelect"></select>
+              </label>
+              <label class="rapid-hidden-field">
+                产品名称
+                <input id="productName" name="productName" type="text" placeholder="产品名称">
+              </label>
+              <label>
+                是否含盖板
+                <select id="includeSeatCover" name="includeSeatCover">
+                  <option value="yes">含盖板</option>
+                  <option value="no">不含盖板</option>
+                </select>
+              </label>
+              <label>
+                型号编号
+                <input id="modelCode" name="modelCode" type="text" placeholder="型号编号">
+              </label>
+              <label>
+                订单数量
+                <input id="orderQuantity" name="orderQuantity" type="number" min="1" step="1" value="300">
+              </label>
+              <label>
+                贸易条款
+                <input id="tradeTerm" name="tradeTerm" type="text" placeholder="贸易条款">
+              </label>
+              <label>
+                目标市场
+                <input id="destinationMarket" name="destinationMarket" type="text" placeholder="美国 / 欧洲 / 中东等">
+              </label>
+              <label>
+                客户来源
+                <select id="customerSourceSelect" data-customer-source-select>
+                  <option value="老客户">老客户</option>
+                  <option value="展会">展会</option>
+                  <option value="平台">平台</option>
+                  <option value="转介绍">转介绍</option>
+                  <option value="业务开发">业务开发</option>
+                  <option value="other">其他</option>
+                </select>
+              </label>
+              <label id="customerSourceOtherWrap" class="template-hidden">
+                其他来源
+                <input id="customerSource" name="customerSource" type="text" placeholder="请填写具体客户来源">
+              </label>
+              <label>
+                内部利润率 %
+                <input id="internalProfitRateInput" type="number" min="0" max="1000" step="0.01" value="15">
+              </label>
+              <label>
+                外购利润率 %
+                <input id="externalProfitRateInput" type="number" min="0" max="1000" step="0.01" value="8">
+              </label>
+              <label class="rapid-hidden-field">
+                报价日期
+                <input id="quoteDate" name="quoteDate" type="date">
+              </label>
+              <label class="rapid-hidden-field">
+                计算方式
+                <select id="calcMode" name="calcMode">
+                  <option value="unit">BOM 单件成本</option>
+                  <option value="budget">总预算均摊</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="section-band section-band--spec span-12">
+            <div class="form-section-title">
+              <span id="specSectionTitle">产品规格</span>
+              <small id="specSectionDesc">先确定型号结构、尺寸和装箱基数，这些直接决定包装、装柜和基础制造成本。</small>
+            </div>
+            <div class="compact-field-grid compact-field-grid--spec">
+              <label>
+                冲水方式
+                <select id="flushingType" name="flushingType">
+                  <option value="虹吸">虹吸</option>
+                  <option value="直冲">直冲</option>
+                  <option value="虹吸旋冲" selected>虹吸旋冲</option>
+                </select>
+              </label>
+              <label>
+                排污方式
+                <select id="trapType" name="trapType">
+                  <option value="S-trap">S-trap</option>
+                  <option value="P-trap">P-trap</option>
+                  <option value="Wall outlet">Wall outlet</option>
+                </select>
+              </label>
+              <label class="rapid-hidden-field">
+                坑距 / 出水口
+                <input id="roughIn" name="roughIn" type="text" placeholder="250 / 300 / 400 mm">
+              </label>
+              <label class="rapid-hidden-field">
+                冲水量
+                <input id="flushVolume" name="flushVolume" type="text" placeholder="3/6L">
+              </label>
+              <label>
+                长 mm
+                <input id="productLength" name="productLength" type="number" min="0" step="1" placeholder="635">
+              </label>
+              <label>
+                宽 mm
+                <input id="productWidth" name="productWidth" type="number" min="0" step="1" placeholder="410">
+              </label>
+              <label>
+                高 mm
+                <input id="productHeight" name="productHeight" type="number" min="0" step="1" placeholder="430">
+              </label>
+              <label>
+                净重 KG
+                <input id="productNetWeight" name="productNetWeight" type="number" min="0" step="0.1" placeholder="34.5">
+              </label>
+              <label class="rapid-hidden-field">
+                每箱数量
+                <input id="unitsPerCarton" name="unitsPerCarton" type="number" min="1" step="1" value="1">
+              </label>
+            </div>
+          </div>
+          <div id="seatCoverSection" class="section-band section-band--cover span-12">
+            <div class="form-section-title">
+              <span>盖板规格</span>
+              <small>只有在马桶产品选择“含盖板”时才需要填写，作为马桶配套件一起进入成本。</small>
+            </div>
+            <div class="compact-field-grid compact-field-grid--cover">
+              <label>
+                盖板产品型号
+                <input id="seatCoverModel" name="seatCoverModel" type="text" placeholder="例如 SC-UF-001">
+              </label>
+              <label>
+                盖板长 mm
+                <input id="seatCoverLength" name="seatCoverLength" type="number" min="0" step="1" placeholder="450">
+              </label>
+              <label>
+                盖板宽 mm
+                <input id="seatCoverWidth" name="seatCoverWidth" type="number" min="0" step="1" placeholder="360">
+              </label>
+              <label>
+                盖板高 mm
+                <input id="seatCoverHeight" name="seatCoverHeight" type="number" min="0" step="1" placeholder="55">
+              </label>
+              <label>
+                盖板档次
+                <select id="seatCoverGrade" name="seatCoverGrade">
+                  <option value="PP 缓降">PP 缓降</option>
+                  <option value="UF 缓降">UF 缓降</option>
+                  <option value="薄盖快拆">薄盖快拆</option>
+                </select>
+              </label>
+              <label>
+                盖板净重 KG
+                <input id="seatCoverNetWeight" name="seatCoverNetWeight" type="number" min="0" step="0.01" placeholder="2.3">
+              </label>
+              <label>
+                铰链要求
+                <select id="seatCoverHinge" name="seatCoverHinge">
+                  <option value="常规缓降">常规缓降</option>
+                  <option value="快拆缓降">快拆缓降</option>
+                  <option value="金属铰链">金属铰链</option>
+                </select>
+              </label>
+              <label class="rapid-hidden-field">
+                盖板备注
+                <input id="seatCoverRemark" name="seatCoverRemark" type="text" placeholder="颜色、LOGO、包装或客户指定要求">
+              </label>
+            </div>
+          </div>
+          <div id="basinSpecSection" class="section-band section-band--basin span-12 template-hidden">
+            <div class="form-section-title">
+              <span>台盆安装与孔位</span>
+              <small>台盆报价保留安装方式、龙头孔、溢水孔和下水配套，马桶模板会自动隐藏这一组。</small>
+            </div>
+            <div class="compact-field-grid compact-field-grid--basin">
+              <label>
+                安装方式
+                <select id="basinInstallation" name="basinInstallation">
+                  <option value="">不适用</option>
+                  <option value="台上安装">台上安装</option>
+                  <option value="台下安装">台下安装</option>
+                  <option value="挂墙半柱">挂墙半柱</option>
+                  <option value="立柱落地">立柱落地</option>
+                </select>
+              </label>
+              <label>
+                龙头孔
+                <select id="faucetHole" name="faucetHole">
+                  <option value="">不适用</option>
+                  <option value="无孔">无孔</option>
+                  <option value="单孔">单孔</option>
+                  <option value="三孔">三孔</option>
+                  <option value="客户指定">客户指定</option>
+                </select>
+              </label>
+              <label>
+                溢水孔
+                <select id="overflowHole" name="overflowHole">
+                  <option value="">不适用</option>
+                  <option value="无溢水孔">无溢水孔</option>
+                  <option value="带溢水孔">带溢水孔</option>
+                  <option value="客户指定">客户指定</option>
+                </select>
+              </label>
+              <label>
+                下水 / 安装件
+                <select id="drainKitIncluded" name="drainKitIncluded">
+                  <option value="">不适用</option>
+                  <option value="不含下水">不含下水</option>
+                  <option value="含普通下水">含普通下水</option>
+                  <option value="含弹跳下水">含弹跳下水</option>
+                  <option value="客户指定配件">客户指定配件</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="section-band section-band--decision span-12">
+            <div class="form-section-title">
+              <span>关键判断项</span>
+              <small>极速模式只保留少量会明显拉动利润、难度和物流波动的判断项。</small>
+            </div>
+            <div class="compact-field-grid compact-field-grid--decision">
+              <label>
+                产品阶段
+                <select id="productLifecycle" name="productLifecycle">
+                  <option value="mature">成熟老款</option>
+                  <option value="iterating">常规改款</option>
+                  <option value="new">新品开发</option>
+                </select>
+              </label>
+              <label>
+                器型复杂度
+                <select id="complexityLevel" name="complexityLevel">
+                  <option value="standard">标准器型</option>
+                  <option value="medium">中等复杂</option>
+                  <option value="high">高复杂器型</option>
+                </select>
+              </label>
+              <label>
+                质量等级
+                <select id="qualityLevel" name="qualityLevel">
+                  <option value="standard">常规出口</option>
+                  <option value="premium">中高端</option>
+                  <option value="retail-strict">严格零售</option>
+                </select>
+              </label>
+              <label>
+                装运场景
+                <select id="shippingScenario" name="shippingScenario">
+                  <option value="full-container">整柜</option>
+                  <option value="consolidated">拼柜</option>
+                  <option value="lcl">LCL 小批量</option>
+                </select>
+              </label>
+              <label class="rapid-hidden-field">
+                外购件档次
+                <select id="accessoryGrade" name="accessoryGrade">
+                  <option value="standard">标准配置</option>
+                  <option value="upgraded">升级配置</option>
+                  <option value="premium">高配 / 定制</option>
+                </select>
+              </label>
+              <label class="rapid-hidden-field">
+                特殊认证
+                <select id="specialCertificationLevel" name="specialCertificationLevel">
+                  <option value="none">无</option>
+                  <option value="standard">常规认证沿用</option>
+                  <option value="custom">新增 / 特殊认证</option>
+                </select>
+              </label>
+              <label class="rapid-hidden-field">
+                特殊配件
+                <select id="specialAccessoryLevel" name="specialAccessoryLevel">
+                  <option value="none">标准配置</option>
+                  <option value="minor">少量特殊件</option>
+                  <option value="major">核心特殊件</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="form-section-title span-12 rapid-hidden-field">
+            <span>包装与成本参数</span>
+            <small>完整模式下维护包装、费率与联系人信息</small>
+          </div>
+          <label class="rapid-hidden-field span-3">
+            釉面等级
+            <select id="glazeLevel" name="glazeLevel">
+              <option value="标准自洁釉">标准自洁釉</option>
+              <option value="高亮纳米釉">高亮纳米釉</option>
+              <option value="抗菌易洁釉">抗菌易洁釉</option>
+            </select>
+          </label>
+          <label class="rapid-hidden-field span-3">
+            包装等级
+            <select id="packageGrade" name="packageGrade">
+              <option value="常规出口 5 层箱">常规出口 5 层箱</option>
+              <option value="加强型 5 层箱">加强型 5 层箱</option>
+              <option value="彩印箱">彩印箱</option>
+              <option value="电商抗摔包装">电商抗摔包装</option>
+            </select>
+          </label>
+          <label class="rapid-hidden-field span-3">
+            装柜方式
+            <select id="loadingMode" name="loadingMode">
+              <option value="40HQ 常规装柜">40HQ 常规装柜</option>
+              <option value="40HQ 托盘装柜">40HQ 托盘装柜</option>
+              <option value="20GP 常规装柜">20GP 常规装柜</option>
+            </select>
+          </label>
+          <div class="package-3d-wrapper rapid-hidden-field">
+            <div class="package-fields">
+              <label>
+                预计包装长 mm
+                <input id="packageLength" name="packageLength" type="number" min="0" step="1" readonly>
+              </label>
+              <label>
+                预计包装宽 mm
+                <input id="packageWidth" name="packageWidth" type="number" min="0" step="1" readonly>
+              </label>
+              <label>
+                预计包装高 mm
+                <input id="packageHeight" name="packageHeight" type="number" min="0" step="1" readonly>
+              </label>
+              <label>
+                纸箱面积 ㎡
+                <input id="cartonArea" name="cartonArea" type="number" min="0" step="0.001" readonly>
+              </label>
+              <label>
+                单箱体积 CBM
+                <input id="cbmPerUnit" name="cbmPerUnit" type="number" min="0" step="0.0001" readonly>
+              </label>
+              <label>
+                单箱毛重 KG
+                <input id="grossWeight" name="grossWeight" type="number" min="0" step="0.01" readonly>
+              </label>
+            </div>
+            <div class="carton-3d-container" id="carton3dContainer">
+              <div class="carton-3d" id="carton3d">
+                <div class="carton-face carton-front" id="cartonFront">Front</div>
+                <div class="carton-face carton-back" id="cartonBack">Back</div>
+                <div class="carton-face carton-right" id="cartonRight">Right</div>
+                <div class="carton-face carton-left" id="cartonLeft">Left</div>
+                <div class="carton-face carton-top" id="cartonTop">Top</div>
+                <div class="carton-face carton-bottom" id="cartonBottom">Bottom</div>
+                <div class="carton-label-l" id="cartonLabel">0 × 0 × 0</div>
+              </div>
+            </div>
+          </div>
+          <label class="rapid-hidden-field span-6">
+            联系人与电话
+            <input id="contactPhone" name="contactPhone" type="text" placeholder="联系人及电话">
+          </label>
+          <label class="rapid-hidden-field span-3">
+            销售顾问
+            <input id="salesName" name="salesName" type="text" placeholder="销售名">
+          </label>
+          <label class="rapid-hidden-field span-3">
+            产量/分摊数量
+            <input id="productionQuantity" name="productionQuantity" type="number" min="1" step="1" value="100">
+          </label>
+          <label class="full-width rapid-hidden-field">
+            认证 / 客户特殊要求
+            <input id="certificationRequirement" name="certificationRequirement" type="text" placeholder="cUPC、WaterSense、EN997、ISTA 跌落测试等">
+          </label>
+          <label class="full-width rapid-hidden-field">
+            备注说明
+            <input id="customerRemark" name="customerRemark" type="text" placeholder="冲水标准、包装要求、认证要求等">
+          </label>
+          <label class="rapid-hidden-field">
+            报价有效期 / 天
+            <input id="validityDays" name="validityDays" type="number" min="1" step="1" value="15">
+          </label>
+          <div id="modeHint" class="mode-hint full-width"></div>
+        </form>
+
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">
+          <div>
+            <h2>报价形成表</h2>
+            <span class="muted">把成本、物流、利润和最终报价串成一条完整链路，方便业务判断价格形成是否合理。</span>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>项目阶段</th>
+                <th>单件 / 参数</th>
+                <th>订单总计 / 结果</th>
+              </tr>
+            </thead>
+            <tbody id="resultTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel advanced-panel">
+        <div class="panel-title">
+          <h2>BOM 明细</h2>
+          <div class="toolbar-actions">
+            <select id="customCategorySelect"></select>
+            <select id="presetItemSelect"></select>
+            <input id="customItemNameInput" type="text" placeholder="新增 BOM 项名称">
+            <button id="addCustomRowBtn" class="secondary dark">新增自定义项</button>
+          </div>
+        </div>
+        <div id="bomModeHint" class="mode-strip"></div>
+        <div id="bomOverviewCards" class="bom-overview"></div>
+        <div class="table-wrap">
+          <table class="bom-table">
+            <thead>
+              <tr>
+                <th>BOM 项目</th>
+                <th>单位</th>
+                <th id="primaryValueHeader">单件用量</th>
+                <th id="secondaryValueHeader">RMB 单价</th>
+                <th id="amountHeader">金额</th>
+                <th>备注</th>
+                <th>是否外购</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="bomTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel collapsed advanced-panel" id="priceLibraryPanel">
+        <div class="panel-title collapsible-header" id="priceLibraryHeader">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h2>价格库维护</h2>
+            <svg class="panel-toggle-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+          <span class="muted">可直接维护盖板、釉面、包装和认证基础价格，修改后自动参与报价</span>
+        </div>
+        <div class="panel-body">
+          <div id="priceLibraryEditor" class="price-library-editor"></div>
+        </div>
+      </section>
+
+      </div>
+
+      <div class="workspace-right">
+      <section class="panel mode-boundary-panel">
+        <div class="panel-title">
+          <div>
+            <h2>模式边界</h2>
+            <span class="muted">系统会根据当前模式切换字段范围、输出口径和建议动作。</span>
+          </div>
+        </div>
+        <div id="modeStrategyPanel" class="mode-strategy-grid"></div>
+      </section>
+
+      <section class="panel rapid-decision-panel">
+        <div class="panel-title">
+          <div>
+            <h2>极速报价判断</h2>
+            <span class="muted">把参考成本、建议区间、可信度和主要风险集中在一屏里，方便先快报再转深算。</span>
+          </div>
+        </div>
+        <div id="rapidDecisionPanel" class="rapid-decision-grid"></div>
+      </section>
+
+      <section class="quick-metrics-panel sidebar-metrics-panel">
+        <div class="panel-title">
+          <div>
+            <h2>核心测算结果</h2>
+            <span class="muted">包装、毛重和单柜装载量会根据当前输入自动更新，方便业务快速判断报价是否合理。</span>
+          </div>
+        </div>
+        <div id="quickMetricsGrid" class="quick-metrics-grid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">
+          <h2>智能报价结果</h2>
+          <span class="muted">物流、装柜、包装、风险预留和利润按默认规则自动联动，业务员只需微调利润与汇率</span>
+        </div>
+        <div class="summary-layout">
+          <div class="stats-grid">
+            <article class="stat-card">
+              <span id="summaryCardLabel1">陶瓷与工艺</span>
+              <strong id="ceramicTotalCard">¥0.00</strong>
+            </article>
+            <article class="stat-card">
+              <span id="summaryCardLabel2">配件系统</span>
+              <strong id="accessoriesTotalCard">¥0.00</strong>
+            </article>
+            <article class="stat-card">
+              <span id="summaryCardLabel3">包装与出货</span>
+              <strong id="packageTotalCard">¥0.00</strong>
+            </article>
+            <article class="stat-card">
+              <span id="summaryCardLabel4">认证与管理</span>
+              <strong id="otherCostCard">¥0.00</strong>
+            </article>
+            <article class="stat-card">
+              <span id="summaryCardLabel5">经营费用</span>
+              <strong id="operatingTotalCard">¥0.00</strong>
+            </article>
+            <article class="stat-card">
+              <span>报价基准成本</span>
+              <strong id="rmbTotalCard">¥0.00</strong>
+            </article>
+            <article class="stat-card highlight">
+              <span>USD 销售价</span>
+              <strong id="usdSellingCard">$0.00</strong>
+            </article>
+          </div>
+          <form id="summaryForm" class="summary-form">
+            <label class="rapid-hidden-field">
+              工厂到港运费 / 件
+              <input id="inlandFreightInput" type="number" min="0" step="0.01" value="0" readonly>
+            </label>
+            <label class="rapid-hidden-field">
+              报关单证 / 件
+              <input id="customsFeeInput" type="number" min="0" step="0.01" value="0" readonly>
+            </label>
+            <label class="rapid-hidden-field">
+              港杂装卸 / 件
+              <input id="portChargesInput" type="number" min="0" step="0.01" value="0" readonly>
+            </label>
+            <label class="rapid-hidden-field">
+              验货检测 / 件
+              <input id="inspectionFeeInput" type="number" min="0" step="0.01" value="0" readonly>
+            </label>
+            <label class="rapid-hidden-field">
+              海运费 / 件
+              <input id="oceanFreightInput" type="number" min="0" step="0.01" value="0" readonly>
+            </label>
+            <label class="rapid-hidden-field">
+              保险费 / 件
+              <input id="insuranceFeeInput" type="number" min="0" step="0.01" value="0" readonly>
+            </label>
+            <label class="rapid-hidden-field">
+              目的港 / 派送 / 件
+              <input id="destinationDeliveryInput" type="number" min="0" step="0.01" value="0" readonly>
+            </label>
+            <label class="rapid-hidden-field">
+              业务佣金预留 %
+              <input id="commissionRateInput" type="number" min="0" max="1000" step="0.01" value="0">
+            </label>
+            <label class="rapid-hidden-field">
+              售后风险预留 %
+              <input id="afterSalesRateInput" type="number" min="0" max="1000" step="0.01" value="0">
+            </label>
+            <label class="rapid-hidden-field">
+              汇率安全垫 %
+              <input id="fxSafetyRateInput" type="number" min="0" max="1000" step="0.01" value="0">
+            </label>
+            <label class="rapid-hidden-field">
+              小单附加 / 件
+              <input id="smallOrderSurchargeInput" type="number" min="0" step="0.01" value="0">
+            </label>
+            <label class="rapid-hidden-field">
+              特殊包装附加 / 件
+              <input id="specialPackageSurchargeInput" type="number" min="0" step="0.01" value="0">
+            </label>
+            <label class="rapid-hidden-field">
+              特殊测试附加 / 件
+              <input id="specialTestingSurchargeInput" type="number" min="0" step="0.01" value="0">
+            </label>
+            <label class="rapid-hidden-field">
+              试产换线附加 / 件
+              <input id="trialProductionSurchargeInput" type="number" min="0" step="0.01" value="0">
+            </label>
+            <label class="rapid-hidden-field">
+              改版箱唛附加 / 件
+              <input id="specialLabelSurchargeInput" type="number" min="0" step="0.01" value="0">
+            </label>
+            <label class="rapid-hidden-field">
+              经营费用率 %
+              <input id="operatingExpenseRateInput" type="number" min="0" max="1000" step="0.01" value="0">
+            </label>
+            <label>
+              Exchange rate 汇率
+              <input id="exchangeRateInput" type="number" min="0.0001" step="0.0001" value="7.15">
+            </label>
+            <label class="rapid-hidden-field">
+              目标毛利率 %
+              <input id="targetGrossMarginRate" name="targetGrossMarginRate" type="number" min="0" max="1000" step="0.01" value="18">
+            </label>
+            <label class="rapid-hidden-field">
+              底线毛利率 %
+              <input id="floorGrossMarginRate" name="floorGrossMarginRate" type="number" min="0" max="1000" step="0.01" value="10">
+            </label>
+            <label class="rapid-hidden-field">
+              报价币种
+              <input id="quoteCurrency" type="text" value="USD" disabled>
+            </label>
+            <label class="rapid-hidden-field full-width">
+              特批说明 / 审批关注点
+              <input id="specialApprovalReason" name="specialApprovalReason" type="text" placeholder="低毛利原因、客户战略背景、付款条件等">
+            </label>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel advanced-panel">
+        <div class="panel-title">
+          <h2>完整模式治理</h2>
+          <span class="muted">输出正式报价、审批价、底价和毛利预警，作为提交审批和对内沟通依据。</span>
+        </div>
+        <div id="fullGovernancePanel" class="full-governance-grid"></div>
+      </section>
+
+      <section class="panel advanced-panel">
+        <div class="panel-title">
+          <h2>数量阶梯报价</h2>
+          <span class="muted">按当前配置自动推导 100 / 300 / 500 / 1000 件参考价格</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>数量档</th>
+                <th>单件人民币成本</th>
+                <th>单件美金报价</th>
+                <th>订单总额</th>
+              </tr>
+            </thead>
+            <tbody id="tierTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel benchmark-panel">
+        <div class="panel-title">
+          <h2>价格库联动摘要</h2>
+          <span class="muted">显示当前规格如何影响配件、包装、认证和条款口径</span>
+        </div>
+        <div id="supplierBenchmarkList" class="benchmark-list"></div>
+      </section>
+
+      <section class="panel quote-preview-panel advanced-panel">
+        <div class="panel-title">
+          <h2>正式报价单预览</h2>
+          <span class="muted">按当前客户、条款和价格生成可打印的正式摘要</span>
+        </div>
+        <div id="quotePreview" class="quote-preview"></div>
+      </section>
+      </div>
+      </div>
+      </section>
+
+      <section class="page-section" data-page="quotes">
+        <div class="page-column">
+          <section class="panel">
+            <div class="panel-title">
+              <h2>离线报价中心</h2>
+              <span class="muted">报价单保存在当前浏览器 IndexedDB，可搜索、打开、复制、版本化和备份恢复。</span>
+            </div>
+            <div id="cloudStatus" class="mode-strip"></div>
+            <div class="cloud-toolbar">
+              <input id="cloudSearchInput" type="text" placeholder="搜索报价单号 / 客户 / 项目 / 型号">
+              <button id="cloudSearchBtn" class="secondary dark" type="button">搜索</button>
+              <button id="cloudRefreshBtn" class="secondary dark" type="button">刷新</button>
+              <button id="cloudSaveBtn" class="primary" type="button">保存到本机</button>
+            </div>
+            <div id="cloudQuoteList" class="cloud-quote-list"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-title">
+              <h2>本地历史报价</h2>
+              <span class="muted">保存在当前浏览器</span>
+            </div>
+            <div id="historyList" class="history-list"></div>
+          </section>
+        </div>
+      </section>
+
+      </section>
+
+      <section class="erp-page" data-erp-page="factory">
+        <div class="module-content-stack">
+          <section class="factory-subpage active" data-factory-page="rates">
+            <section class="panel">
+              <div class="panel-title">
+                <div>
+                  <h2>工厂费率中心</h2>
+                  <span class="muted">统一维护原料价格和月度制造费率，报价自动引用这里的数据。</span>
+                </div>
+              </div>
+              <div id="factoryRatesOverview" class="factory-overview-grid"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-title">
+                <h2>费率参数表</h2>
+                <span class="muted">修改后即时回写报价工作台，不需要单独保存参数。</span>
+              </div>
+              <div id="factoryRatesEditor" class="factory-editor-stack"></div>
+            </section>
+          </section>
+
+          <section class="factory-subpage" data-factory-page="process">
+            <section class="panel">
+              <div class="panel-title">
+                <div>
+                  <h2>工序中心</h2>
+                  <span class="muted">维护核心工序的标准节拍和成本系数，把工艺难度真实联动到报价中的人工、能耗与质检成本。</span>
+                </div>
+              </div>
+              <div id="factoryProcessOverview" class="factory-overview-grid"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-title">
+                <h2>工序参数表</h2>
+                <span class="muted">建议先按产品大类和核心工序沉淀一版，后续再扩展到更细的岗位和工段。</span>
+              </div>
+              <div id="factoryProcessEditor" class="factory-editor-stack"></div>
+            </section>
+          </section>
+
+          <section class="factory-subpage" data-factory-page="packaging">
+            <section class="panel">
+              <div class="panel-title">
+                <div>
+                  <h2>包装中心</h2>
+                  <span class="muted">维护包装等级、外箱展开面积规则和产品包装外扩参数，直接驱动包装成本与装柜测算。</span>
+                </div>
+              </div>
+              <div id="factoryPackagingOverview" class="factory-overview-grid"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-title">
+                <h2>包装参数表</h2>
+                <span class="muted">把包装规则沉淀成标准口径，后续不同产品和不同市场都可快速复用。</span>
+              </div>
+              <div id="factoryPackagingEditor" class="factory-editor-stack"></div>
+            </section>
+          </section>
+
+          <section class="factory-subpage" data-factory-page="personnel">
+            <section class="panel">
+              <div class="panel-title">
+                <div>
+                  <h2>工厂人员中心</h2>
+                  <span class="muted">维护各班组人数、平均工资与分摊比例，并联动到人工及制造费用。</span>
+                </div>
+              </div>
+              <div id="factoryPersonnelOverview" class="factory-overview-grid"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-title">
+                <h2>班组与工资分摊</h2>
+                <span class="muted">适合按部门先沉淀一版，后续再细化到岗位与工序。</span>
+              </div>
+              <div id="factoryPersonnelEditor" class="factory-editor-stack"></div>
+            </section>
+          </section>
+        </div>
+      </section>
+
+      <section class="erp-page" data-erp-page="sales">
+        <section class="panel placeholder-panel">
+          <div class="panel-title">
+            <h2>销售管理</h2>
+            <span class="muted">围绕客户维度价格规则、报价状态流转和客户版输出做销售决策。</span>
+          </div>
+          <div class="placeholder-grid">
+            <article><strong>客户价格规则</strong><span>客户等级、默认币种、贸易条款、目的港、付款方式、佣金和历史成交价</span></article>
+            <article><strong>报价状态流转</strong><span>草稿、待核价、待审批、已批准、已外发、接受/拒绝、转订单、过期、作废</span></article>
+            <article><strong>客户版输出</strong><span>套装总价、分项报价、主产品+可选配件三种展示，不泄露内部成本</span></article>
+          </div>
+        </section>
+      </section>
+
+      <section class="erp-page" data-erp-page="purchase">
+        <section class="panel placeholder-panel">
+          <div class="panel-title">
+            <h2>采购管理</h2>
+            <span class="muted">承接中国配件、本地配件和包装物的供应商报价有效性管理。</span>
+          </div>
+          <div class="placeholder-grid">
+            <article><strong>供应商报价库</strong><span>供应商、币种、价格口径、MOQ、交期、有效期、附件和审批状态</span></article>
+            <article><strong>中国配件路径</strong><span>到尼厂组装、到尼厂不组装、中国直发客户、客户单独报价四种路径</span></article>
+            <article><strong>过期报价管控</strong><span>过期供应商报价不能直接用于正式报价，只能走审批或作为历史参考</span></article>
+          </div>
+        </section>
+      </section>
+
+      <section class="erp-page" data-erp-page="production">
+        <section class="panel placeholder-panel">
+          <div class="panel-title">
+            <h2>生产管理</h2>
+            <span class="muted">后续可将报价配置、工艺路线和排产计划打通。</span>
+          </div>
+          <div class="placeholder-grid">
+            <article><strong>排产计划</strong><span>基于订单与交付期生成产能安排</span></article>
+            <article><strong>工艺路线</strong><span>沉淀陶瓷、组装、包装的标准工序</span></article>
+            <article><strong>车间进度</strong><span>跟踪生产节点、良率与异常</span></article>
+          </div>
+        </section>
+      </section>
+
+      <section class="erp-page" data-erp-page="finance">
+        <section class="panel placeholder-panel">
+          <div class="panel-title">
+            <h2>财务管理</h2>
+            <span class="muted">统一管理报价汇率、毛利、付款条款、保险和风险预留。</span>
+          </div>
+          <div class="placeholder-grid">
+            <article><strong>汇率快照</strong><span>正式报价保存当日汇率或自定义汇率，波动超过阈值提示复核</span></article>
+            <article><strong>毛利预警</strong><span>低于底线阻断，高毛利异常提醒，手动销售价进入审批</span></article>
+            <article><strong>风险预留</strong><span>破损、缺件、售后备件、索赔、返工补发、验货和包装加强费用</span></article>
+          </div>
+        </section>
+      </section>
+
+      <section class="erp-page" data-erp-page="master">
+        <section class="panel placeholder-panel">
+          <div class="panel-title">
+            <h2>基础资料</h2>
+            <span class="muted">把产品、包装版本、BOM 版本、物流路线和快照规则集中管理。</span>
+          </div>
+          <div class="placeholder-grid">
+            <article><strong>产品/包装版本</strong><span>产品规格、材质版本、1 件/箱或 2 件/箱、嵌套后 CBM 和装柜参数</span></article>
+            <article><strong>BOM 版本</strong><span>主产品、可选配件、替代件、是否客户可见、是否进入套装价</span></article>
+            <article><strong>快照规则</strong><span>正式报价保存产品、BOM、包装、供应商报价、物流费率和汇率快照</span></article>
+          </div>
+        </section>
+      </section>
+
+      <section class="erp-page" data-erp-page="system">
+        <section class="system-subpage active" data-system-page="account">
+          <div class="page-column">
+            <section class="panel">
+              <div class="panel-title">
+                <h2>离线数据与默认设置</h2>
+                <span class="muted">第一版纯浏览器离线运行，不需要登录；报价、设置和价格库均保存在本机。</span>
+              </div>
+              <div id="accountStatus" class="mode-strip"></div>
+              <div class="account-grid">
+                <div class="account-card">
+                  <h3>本机数据</h3>
+                  <div class="account-meta">
+                    <span>模式</span>
+                    <strong id="currentUserEmail">-</strong>
+                  </div>
+                  <div class="account-meta">
+                    <span>存储</span>
+                    <strong id="currentUserName">-</strong>
+                  </div>
+                  <div class="account-meta">
+                    <span>权限</span>
+                    <strong id="currentUserRole">-</strong>
+                  </div>
+                </div>
+                <form id="passwordForm" class="account-card account-form">
+                  <h3>公司默认设置</h3>
+                  <label>
+                    公司英文名
+                    <input id="currentPasswordInput" type="text" autocomplete="off" placeholder="Gold King Sanitaryware Co., Ltd.">
+                  </label>
+                  <label>
+                    默认付款条款
+                    <input id="newPasswordInput" type="text" autocomplete="off" placeholder="T/T 30% deposit, balance before shipment">
+                  </label>
+                  <label>
+                    报价备注
+                    <input id="confirmPasswordInput" type="text" autocomplete="off" placeholder="Prices are valid within quotation validity.">
+                  </label>
+                  <div id="passwordMessage" class="auth-message"></div>
+                  <button id="changePasswordBtn" class="primary" type="submit">保存设置</button>
+                </form>
+              </div>
+            </section>
+
+            <section class="panel hidden" id="userAdminPanel">
+              <div class="panel-title">
+                <h2>离线备份明细</h2>
+                <span class="muted">导入 JSON 备份后会覆盖当前本机报价数据，请提前导出备份。</span>
+              </div>
+              <form id="userCreateForm" class="grid-form user-create-form">
+                <label>
+                  登录邮箱
+                  <input id="userEmailInput" type="email" placeholder="user@goldking6.top">
+                </label>
+                <label>
+                  姓名
+                  <input id="userNameInput" type="text" placeholder="姓名">
+                </label>
+                <label>
+                  角色
+                  <select id="userRoleInput">
+                    <option value="viewer">只读</option>
+                    <option value="sales">业务员</option>
+                    <option value="procurement">采购</option>
+                    <option value="logistics">物流/单证</option>
+                    <option value="finance">财务</option>
+                    <option value="product">产品/工程</option>
+                    <option value="supervisor">主管</option>
+                    <option value="editor">编辑(兼容)</option>
+                    <option value="admin">管理员</option>
+                  </select>
+                </label>
+                <label>
+                  初始密码
+                  <input id="userPasswordInput" type="password" placeholder="至少 6 位">
+                </label>
+                <div class="full-width user-create-actions">
+                  <div id="userAdminMessage" class="auth-message"></div>
+                  <button id="createUserBtn" class="primary" type="submit">新增用户</button>
+                </div>
+              </form>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>邮箱</th>
+                      <th>姓名</th>
+                      <th>角色</th>
+                      <th>状态</th>
+                      <th>创建时间</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="userTableBody"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="panel placeholder-panel">
+              <div class="panel-title">
+                <h2>后续扩展</h2>
+                <span class="muted">后续可继续在系统管理下扩展系统日志、参数中心和操作审计。</span>
+              </div>
+              <div class="quick-grid">
+                <button class="quick-card disabled" type="button">
+                  <strong>系统日志</strong>
+                  <span>预留给后续审计日志与操作追踪</span>
+                </button>
+                <button class="quick-card disabled" type="button">
+                  <strong>参数中心</strong>
+                  <span>预留给 ERP 级别的系统参数维护</span>
+                </button>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+    </div>
+  </div>
+
+  <template id="historyItemTemplate">
+    <button class="history-item" type="button">
+      <div>
+        <strong class="history-code"></strong>
+        <p class="history-meta"></p>
+      </div>
+      <div class="history-side">
+        <div class="history-tags"></div>
+        <span class="history-total"></span>
+      </div>
+    </button>
+  </template>
+
+  <div id="authModal" class="auth-modal hidden">
+    <div class="auth-dialog">
+      <div class="auth-dialog-head">
+        <div>
+          <p class="eyebrow auth-eyebrow">Team Login</p>
+          <h2>登录协作报价系统</h2>
+          <p class="muted">使用系统账号统一登录，登录后即可搜索、共享并维护团队报价单。</p>
+        </div>
+        <button id="authCloseBtn" class="icon-btn" type="button" aria-label="关闭">×</button>
+      </div>
+      <form id="authForm" class="auth-form">
+        <label>
+          邮箱
+          <input id="authEmailInput" type="email" placeholder="you@company.com" autocomplete="email">
+        </label>
+        <label>
+          密码
+          <input id="authPasswordInput" type="password" placeholder="请输入密码" autocomplete="current-password">
+        </label>
+        <div id="authMessage" class="auth-message"></div>
+        <div class="auth-form-actions">
+          <button id="authSubmitBtn" class="primary" type="submit">登录</button>
+          <button id="authCancelBtn" class="secondary dark" type="button">暂不登录</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="actionModal" class="auth-modal hidden">
+    <div class="auth-dialog action-dialog">
+      <div class="auth-dialog-head">
+        <div>
+          <p id="actionDialogEyebrow" class="eyebrow auth-eyebrow">Workflow Action</p>
+          <h2 id="actionDialogTitle">处理操作</h2>
+          <p id="actionDialogDesc" class="muted">请确认本次操作内容。</p>
+        </div>
+        <button id="actionCloseBtn" class="icon-btn" type="button" aria-label="关闭">×</button>
+      </div>
+      <form id="actionForm" class="auth-form">
+        <label id="actionTextInputWrap" class="hidden">
+          <span id="actionTextInputLabel">内容</span>
+          <input id="actionTextInput" type="text" placeholder="">
+        </label>
+        <label id="actionTextareaWrap" class="hidden">
+          <span id="actionTextareaLabel">备注</span>
+          <textarea id="actionTextareaInput" rows="4" placeholder=""></textarea>
+        </label>
+        <div id="actionMessage" class="auth-message"></div>
+        <div class="auth-form-actions">
+          <button id="actionSubmitBtn" class="primary" type="submit">确认</button>
+          <button id="actionCancelBtn" class="secondary dark" type="button">取消</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="rapidImpactModal" class="auth-modal hidden">
+    <div class="auth-dialog action-dialog rapid-impact-dialog">
+      <div class="auth-dialog-head">
+        <div>
+          <p class="eyebrow auth-eyebrow">Rapid Driver Detail</p>
+          <h2 id="rapidImpactModalTitle">输入影响详情</h2>
+          <p id="rapidImpactModalMeta" class="muted">查看当前输入项如何影响极速模式报价结果。</p>
+        </div>
+        <button id="rapidImpactModalCloseBtn" class="icon-btn" type="button" aria-label="关闭">×</button>
+      </div>
+      <div id="rapidImpactModalBody" class="rapid-impact-body"></div>
+      <div class="auth-form-actions">
+        <button id="rapidImpactModalCancelBtn" class="secondary dark" type="button">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rapidFormulaModal" class="auth-modal hidden">
+    <div class="auth-dialog action-dialog rapid-formula-dialog">
+      <div class="auth-dialog-head">
+        <div>
+          <p class="eyebrow auth-eyebrow">Rapid Quote Formula</p>
+          <h2 id="rapidFormulaModalTitle">报价区间计算公式</h2>
+          <p id="rapidFormulaModalMeta" class="muted">查看极速模式报价区间是如何一步一步算出来的。</p>
+        </div>
+        <button id="rapidFormulaModalCloseBtn" class="icon-btn" type="button" aria-label="关闭">×</button>
+      </div>
+      <div id="rapidFormulaModalBody" class="rapid-formula-body"></div>
+      <div class="auth-form-actions">
+        <button id="rapidFormulaModalCancelBtn" class="secondary dark" type="button">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rapidConfigModal" class="auth-modal hidden">
+    <div class="auth-dialog action-dialog rapid-config-dialog">
+      <div class="auth-dialog-head">
+        <div>
+          <p class="eyebrow auth-eyebrow">Rapid Config Center</p>
+          <h2>极速模式经验参数中心</h2>
+          <p class="muted">在这里集中调整利润带、区间宽度和可信度规则，修改后会立即联动右侧快报结果并自动保存在本机。</p>
+        </div>
+        <button id="rapidConfigModalCloseBtn" class="icon-btn" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="rapid-config-toolbar">
+        <div class="rapid-config-toolbar-note">
+          <strong>当前用途</strong>
+          <span>建议把这里当作极速模式的经验定价后台，而不是一线报价时频繁改动的录入项。</span>
+        </div>
+        <button id="rapidConfigResetBtn" class="secondary dark" type="button">恢复默认</button>
+      </div>
+      <div id="rapidConfigPanel" class="rapid-config-grid rapid-config-grid--modal"></div>
+      <div class="auth-form-actions">
+        <button id="rapidConfigModalCancelBtn" class="secondary dark" type="button">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script src="cloud.js"></script>
+</body>
+</html>

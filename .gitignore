@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+
+# Runtime and local development data
+.local-data/
+*.sqlite
+*.sqlite3
+*.db
+dev-db.json
+
+# Environment and local configuration secrets
+.env
+.env.*
+!.env.example
+
+# Platform-local folders
+.vercel/
+.trae/
+.tmp-anthropic-skills/
+
+# Logs and diagnostics
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build and cache output
+dist/
+build/
+coverage/
+.cache/
+.parcel-cache/
+.turbo/
+tmp/
+temp/
+
+# Office temporary lock files
+~$*.docx
+~$*.xlsx
+~$*.pptx
+
+# Generated quote backups / exports
+offline-quotes-backup-*.json
+报价系统备份-*.json
+exports/
+outputs/
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.vscode/
+.idea/

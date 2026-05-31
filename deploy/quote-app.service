@@ -1,0 +1,16 @@
+[Unit]
+Description=Toilet BOM Quote App
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/quote-app
+Environment=NODE_ENV=production
+EnvironmentFile=/opt/quote-app/.env
+ExecStart=/usr/bin/node /opt/quote-app/server.mjs
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
